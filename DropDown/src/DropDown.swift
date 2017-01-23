@@ -481,8 +481,8 @@ extension DropDown {
 
 		tableView.isScrollEnabled = layout.offscreenHeight > 0
 
-		DispatchQueue.main.async { [unowned self] in
-			self.tableView.flashScrollIndicators()
+		DispatchQueue.main.async { [weak self] in
+			self?.tableView.flashScrollIndicators()
 		}
 
 		super.updateConstraints()
@@ -736,11 +736,11 @@ extension DropDown {
 	*/
 	@discardableResult
 	public func show() -> (canBeDisplayed: Bool, offscreenHeight: CGFloat?) {
-		if self == DropDown.VisibleDropDown {
+		if self == DropDown.VisibleDropDown && DropDown.VisibleDropDown?.isHidden == false {
 			return (true, 0)
 		}
 
-		if let visibleDropDown = DropDown.VisibleDropDown {
+		if let visibleDropDown = DropDown.VisibleDropDown  {
 			visibleDropDown.cancel()
 		}
 
@@ -796,17 +796,10 @@ extension DropDown {
 			return
 		}
 
-		UIView.animate(
-			withDuration: animationduration,
-			delay: 0,
-			options: animationExitOptions,
-			animations: { [unowned self] in
-				self.setHiddentState()
-			},
-			completion: { [unowned self] finished in
-				self.isHidden = true
-				self.removeFromSuperview()
-			})
+        self.setHiddentState()
+        self.isHidden = true
+        self.removeFromSuperview()
+        
 	}
 
 	fileprivate func cancel() {
